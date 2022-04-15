@@ -9,6 +9,7 @@ echo "**********REACT**********"
 echo "Installing React libraries"
 cd "$APP_DIR"/static
 npm install
+npm run build
 cd "$APP_DIR"
 echo "React libraries installed"
 
