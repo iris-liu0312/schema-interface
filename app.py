@@ -13,12 +13,13 @@ nodes = {}
 edges = []
 schema_json = {}
 
-# SDF version 1.4
+# SDF version 3.0
 schema_key_dict = {
-    'event': ['@id', 'name', 'comment', 'description', 'aka', 'qnode', 'qlabel', 'minDuration', 'maxDuration', 'goal', 'ta1explanation', 'importance', 'children_gate'],
+    'event': ['@id', 'name', 'comment', 'description', 'aka', 'qnode', 'qlabel', 'isSchema', 'goal', 'ta1explanation', 'importance', 'children_gate', 'instanceOf', 'probParent', 'probChild', 'probability', 'liklihood', 'wd_node', 'wd_label', 'wd_description', 'modality', 'participants', 'privateData'],
     'child': ['child', 'comment', 'optional', 'importance', 'outlinks'],
     'privateData': ['@type', 'template', 'repeatable', 'importance'],
-    'entity': ['name', '@id', 'qnode', 'qlabel', 'centrality']
+    'entity': ['name', '@id', 'qnode', 'qlabel', 'centrality', 'wd_node', 'wd_label', 'wd_description', 'modality', 'aka'],
+    # 'relation': ['name', 'wd_node', 'wd_label', 'modality', 'wd_description', 'ta1ref', 'relationSubject', 'relationObject', 'relationPredicate']
 }
 
 def create_node(_id, _label, _type, _shape=''):
@@ -121,7 +122,14 @@ def get_relations(relations):
                            _label = relation['name'],
                            _edge_type = 'relation')
         edge['data']['@id'] = relation['@id']
-        edge['data']['predicate'] = relation['relationPredicate']
+
+        #set edge['data']['predicate'] = relation['relationPredicate'] or relation['wd_node']
+        if 'relationPredicate' in relation.keys():
+            edge['data']['predicate'] = relation['relationPredicate']
+        elif 'wd_node' in relation.keys():
+            edge['data']['predicate'] = relation['wd_node']
+        else:
+            edge['data']['predicate'] = ''
         edges.append(edge)
 
     return edges
