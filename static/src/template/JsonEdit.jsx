@@ -30,26 +30,30 @@ export default class JSONEdit extends Component {
                     value: {
                         '@id': 'Events/10000/',
                         'name': '',
-                        'isSchema': false,
-                        'ta1explanation': '',
-                        'description': '',
                         'comment': '',
-                        'instanceOf': '@id',
-                        'probParent': '@id',
-                        'probChild': '@id',
-                        'probability': 0.0,
-                        'importance': 0.0,
-                        'likelihood': 0.0,
+                        'isSchema': false,
+                        'optional': false,
+                        'description': '',
                         'wd_node': ['wd:Q1234567', 'wdt:P1234567'],
                         'wd_label': '',
                         'wd_description': '',
                         'modality': ['generic', 'hedged', 'irrealis', 'negated'],
                         'participants': [],
-                        'privateData': {
-                            '@type': '',
-                            'template': '',
-                            'repeatable': false
-                        }
+                        'likelihood': [
+                            {
+                                'probParent': '@id',
+                                'probChild': '@id',
+                                'probability': 0.0
+                            },
+                        ],
+                        'importance': [
+                            {
+                                'probParent': '@id',
+                                'probChild': '@id',
+                                'probability': 0.0
+                            }
+                        ],
+                        'outlink': []
                     }
                 },
                 {
@@ -61,13 +65,10 @@ export default class JSONEdit extends Component {
                         'name': 'Event outlinks',
                         'comment': 'container node',
                         'isSchema': false,
-                        'children_gate': 'or',
+                        'optional': false,
+                        'children_gate': 'xor',
                         'children': [],
-                        'privateData': {
-                            '@type': 'kairos:Container',
-                            'template': '',
-                            'repeatable': false
-                        }
+                        'outlink': []
                     }
                 },
                 {
@@ -79,26 +80,29 @@ export default class JSONEdit extends Component {
                         'name': '',
                         'comment': 'container node',
                         'isSchema': false,
-                        'ta1explanation': '',
+                        'optional': false,
                         'description': '',
-                        'comment': '',
-                        'instanceOf': '@id',
-                        'probParent': '@id',
-                        'probChild': '@id',
-                        'probability': 0.0,
-                        'importance': 0.0,
-                        'likelihood': 0.0,
                         'wd_node': ['wd:Q1234567', 'wdt:P1234567'],
                         'wd_label': '',
                         'wd_description': '',
-                        'modality': ['generic', 'hedged', 'irrealis', 'negated'],
-                        'privateData': {
-                            '@type': '',
-                            'template': '',
-                            'repeatable': false
-                        },
                         'children_gate': 'or',
-                        'children': []
+                        'modality': ['generic', 'hedged', 'irrealis', 'negated'],
+                        'children': [],
+                        'likelihood': [
+                            {
+                                'probParent': '@id',
+                                'probChild': '@id',
+                                'probability': 0.0
+                            },
+                        ],
+                        'importance': [
+                            {
+                                'probParent': '@id',
+                                'probChild': '@id',
+                                'probability': 0.0
+                            }
+                        ],
+                        'outlink': []
                     }
                 },
                 {
@@ -108,7 +112,6 @@ export default class JSONEdit extends Component {
                     value: {
                         '@id': 'Participants/20000/',
                         'roleName': 'consult_XPO',
-                        'templateParticipant': '',
                         'entity': 'Entities/00001/'
                     }
                 },
@@ -127,9 +130,7 @@ export default class JSONEdit extends Component {
                     field: '',
                     value: {
                         'child': 'Events/10000/Event',
-                        'comment': 'name',
-                        'optional': false,
-                        'importance': 1,
+                        'comment': '',
                         'outlinks': []
                     }
                 },
@@ -140,11 +141,9 @@ export default class JSONEdit extends Component {
                     value: {
                         '@id': 'Entities/20000/',
                         'name': '',
-                        'aka': [],
                         'wd_node': 'wd:Q1234567',
                         'wd_label': '',
-                        'wd_description': '',
-                        'modality': ['generic', 'hedged', 'negated']                        
+                        'wd_description': ''                     
                     }
                 },
                 {
@@ -158,9 +157,7 @@ export default class JSONEdit extends Component {
                         'relationObject': 'Entities/20001/',
                         'wd_node': 'wdt:P1234567',
                         'wd_label': '',
-                        'modality': ['negated', 'hedged'],
-                        'wd_description': '',
-                        'ta1ref': ''                     
+                        'wd_description': ''                   
                     }
                 }
             ]
