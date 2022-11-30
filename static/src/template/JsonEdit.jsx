@@ -24,85 +24,31 @@ export default class JSONEdit extends Component {
             onEvent: this.handleEvent,
             templates: [
                 {
-                    text: 'Event',
-                    title: 'Insert Event',
+                    text: 'Importance',
+                    title: 'Insert Importance',
                     field: '',
                     value: {
-                        '@id': 'Events/10000/',
-                        'name': '',
-                        'comment': '',
-                        'isSchema': false,
-                        'optional': false,
-                        'description': '',
-                        'wd_node': ['wd:Q1234567', 'wdt:P1234567'],
-                        'wd_label': '',
-                        'wd_description': '',
-                        'modality': ['generic', 'hedged', 'irrealis', 'negated'],
-                        'participants': [],
-                        'likelihood': [
-                            {
-                                'probParent': '@id',
-                                'probChild': '@id',
-                                'probability': 0.0
-                            },
-                        ],
-                        'importance': [
-                            {
-                                'probParent': '@id',
-                                'probChild': '@id',
-                                'probability': 0.0
-                            }
-                        ],
-                        'outlink': []
+                        'probParent': '@id',
+                        'probChild': '@id',
+                        'probability': 0.0
                     }
                 },
                 {
-                    text: 'Container',
-                    title: 'Insert Container',
+                    text: 'Likelihood',
+                    title: 'Insert Likelihood',
                     field: '',
                     value: {
-                        '@id': 'Events/10000/Container:',
-                        'name': 'Event outlinks',
-                        'comment': 'container node',
-                        'isSchema': false,
-                        'optional': false,
-                        'children_gate': 'xor',
-                        'children': [],
-                        'outlink': []
+                        'probParent': '@id',
+                        'probChild': '@id',
+                        'probability': 0.0
                     }
                 },
                 {
-                    text: 'Container Event',
-                    title: 'Insert Container Event',
+                    text: 'Modality',
+                    title: 'Insert Modality',
                     field: '',
                     value: {
-                        '@id': 'Events/10000/Container:',
-                        'name': '',
-                        'comment': 'container node',
-                        'isSchema': false,
-                        'optional': false,
-                        'description': '',
-                        'wd_node': ['wd:Q1234567', 'wdt:P1234567'],
-                        'wd_label': '',
-                        'wd_description': '',
-                        'children_gate': 'or',
-                        'modality': ['generic', 'hedged', 'irrealis', 'negated'],
-                        'children': [],
-                        'likelihood': [
-                            {
-                                'probParent': '@id',
-                                'probChild': '@id',
-                                'probability': 0.0
-                            },
-                        ],
-                        'importance': [
-                            {
-                                'probParent': '@id',
-                                'probChild': '@id',
-                                'probability': 0.0
-                            }
-                        ],
-                        'outlink': []
+                        'modality': ['generic', 'hedged', 'irrealis', 'negated']
                     }
                 },
                 {
@@ -116,22 +62,26 @@ export default class JSONEdit extends Component {
                     }
                 },
                 {
-                    text: 'Children',
-                    title: 'Insert Children',
+                    text: 'Event',
+                    title: 'Insert Event',
                     field: '',
                     value: {
-                        'children_gate': 'or',
-                        'children': [],
-                    }
-                },
-                {
-                    text: 'Child',
-                    title: 'Insert Child',
-                    field: '',
-                    value: {
-                        'child': 'Events/10000/Event',
-                        'comment': '',
-                        'outlinks': []
+                        '@id': 'Events/10000/',
+                        'name': '',
+                        'description': '',
+                        'wd_node': ['wd:Q1234567', 'wdt:P1234567'],
+                        'wd_label': '',
+                        'wd_description': '',
+                        'isSchema': false,
+                        'repeatable': false,
+                        'optional': false,
+                        'outlinks': [],
+                        'participants': [],
+                        'modality': [],
+                        'importance': [],
+                        'likelihood': [],
+                        'entities': [],
+                        'relations': []
                     }
                 },
                 {
@@ -159,12 +109,54 @@ export default class JSONEdit extends Component {
                         'wd_label': '',
                         'wd_description': ''                   
                     }
+                },
+                {
+                    text: 'Container',
+                    title: 'Insert Container',
+                    field: '',
+                    value: {
+                        '@id': 'Events/10000/Container:',
+                        'name': 'Event outlinks',
+                        'comment': 'container node',
+                        'isSchema': false,
+                        'optional': false,
+                        'children_gate': 'xor',
+                        'children': [],
+                        'outlinks': []
+                    }
+                },
+                {
+                    text: 'Container Event',
+                    title: 'Insert Container Event',
+                    field: '',
+                    value: {
+                        '@id': 'Events/10000/Container:',
+                        'name': '',
+                        'description': '',
+                        'wd_node': ['wd:Q1234567', 'wdt:P1234567'],
+                        'wd_label': '',
+                        'wd_description': '',
+                        'isSchema': false,
+                        'repeatable': false,
+                        'optional': false,
+                        'children_gate': 'or',
+                        'outlinks': [],
+                        'participants': [],
+                        'children': [],
+                        'modality': [],
+                        'entities': [],
+                        'relations': [],
+                        'importance': [],
+                        'likelihood': []
+                        
+                    }
                 }
             ]
         };
 
         this.jsoneditor = new JSONEditor(this.container, options);
         this.jsoneditor.set(this.props.schemaJson);
+
     }
 
     componentWillUnmount() {

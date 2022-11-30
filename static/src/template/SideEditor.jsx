@@ -12,7 +12,7 @@ function SideEditor(props) {
     Handles sidebar that shows general information about a node
     selected via right-click.
 
-    When an text field is left-clicked to be edited, the
+    When a text field is left-clicked to be edited, the
     original data is frozen in 'edit'.
     The JSON is only changed if the field is changed out of
     focus and the field is different from the frozen data. 
