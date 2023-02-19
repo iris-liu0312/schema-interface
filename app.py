@@ -13,12 +13,13 @@ nodes = {}
 edges = []
 schema_json = {}
 
-# SDF version 1.4
+# SDF version 3.0
 schema_key_dict = {
-    'event': ['@id', 'name', 'comment', 'description', 'aka', 'qnode', 'qlabel', 'minDuration', 'maxDuration', 'goal', 'ta1explanation', 'importance', 'children_gate'],
+    'event': ['@id', 'name', 'comment', 'description', 'aka', 'qnode', 'qlabel', 'isSchema', 'goal', 'ta1explanation', 'importance', 'children_gate', 'instanceOf', 'probParent', 'probChild', 'probability', 'liklihood', 'wd_node', 'wd_label', 'wd_description', 'modality', 'participants', 'privateData', 'outlinks', 'entities', 'relations', 'children', 'optional', 'repeatable'],
     'child': ['child', 'comment', 'optional', 'importance', 'outlinks'],
     'privateData': ['@type', 'template', 'repeatable', 'importance'],
-    'entity': ['name', '@id', 'qnode', 'qlabel', 'centrality']
+    'entity': ['name', '@id', 'qnode', 'qlabel', 'centrality', 'wd_node', 'wd_label', 'wd_description', 'modality', 'aka'],
+    # 'relation': ['name', 'wd_node', 'wd_label', 'modality', 'wd_description', 'ta1ref', 'relationSubject', 'relationObject', 'relationPredicate']
 }
 
 def create_node(_id, _label, _type, _shape=''):
@@ -89,7 +90,7 @@ def get_entities(entities):
     """Creates lists of entity nodes through the schema entity ontology.
     
     Parameters:
-    entities (dict): information on all entities in a schema
+    entities (list): information on all entities in a schema
 
     Returns:
     nodes (dict): entity nodes in the schema
@@ -99,6 +100,10 @@ def get_entities(entities):
         _label = entity['name']
         entity_id = entity['@id']
         nodes[entity_id] = extend_node(create_node(entity_id, _label, 'entity'), entity)
+        
+    # if entities is empty, add a dummy node
+    if len(nodes) == 0:
+        nodes['Entities/20000/'] = create_node('Entities/20000/', 'Entity', 'entity')
 
     return nodes
 
@@ -106,8 +111,7 @@ def get_relations(relations):
     """Creates edges between entities through the schema relation ontology.
 
     Parameters:
-    nodes (dict): nodes in the schema
-    relations (dict): information on all relations in a schema
+    relations (list): information on all relations in a schema
 
     Returns:
     nodes (dict): nodes in the schema
@@ -121,7 +125,7 @@ def get_relations(relations):
                            _label = relation['name'],
                            _edge_type = 'relation')
         edge['data']['@id'] = relation['@id']
-        edge['data']['predicate'] = relation['relationPredicate']
+        edge['data']['predicate'] = relation.get('relationPredicate', relation.get('wd_node', ''))
         edges.append(edge)
 
     return edges
@@ -183,16 +187,26 @@ def get_nodes_and_edges(schema_json):
     nodes (dict): nodes in the schema
     edges (list): edges in the schema
     """
-    
+    # Iterate through all events. Inside every event, check if there is 'entities', or 'relations' value. If there is, append to entity or relations list
+    entity = []
+    relations = []
+
+    for event in schema_json['events']:
+        if 'entities' in event.keys():
+            entity.extend(event['entities'])
+        if 'relations' in event.keys():
+            relations.extend(event['relations'])
+
+
     # get entities and relations
-    nodes = get_entities(schema_json['entities'])
-    edges = get_relations(schema_json['relations'])
+    nodes = get_entities(entity)
+    edges = get_relations(relations)
 
     # get events and attach entities to them
     containers_to_remove = []
     events = schema_json['events']
+
     for event in events:
-        # create event node
         # if node already exists, add information
         _label = event['name'].split('/')[-1].replace('_', ' ').replace('-', ' ')
         event_id = event['@id']
@@ -225,6 +239,8 @@ def get_nodes_and_edges(schema_json):
             for participant in event['participants']:
                 _label = participant['roleName']
                 entity_id = participant['entity']
+                if entity_id == '':
+                    entity_id = "Entities/20000/"
                 edge = create_edge(event_id, entity_id, _label, _edge_type='step_participant')
                 edge['data']['@id'] = participant['@id']
                 edges.append(edge)
@@ -239,16 +255,15 @@ def get_nodes_and_edges(schema_json):
             elif nodes[event_id]['data']['children_gate'] == 'and':
                 gate = 'and'
             
-            for child in event['children']:
-                # add child information or create new node
-                child_id = child['child']
+            for child in event['children']:       
+                child_id = child
                 if child_id in nodes:
                     prev_type = nodes[child_id]['data']['_type']
                     nodes[child_id]['data']['_type'] = 'child'
-                    nodes[child_id] = extend_node(nodes[child_id], child)
+                    # nodes[child_id] = extend_node(nodes[child_id], child)
                     nodes[child_id]['data']['_type'] = prev_type
                 else:                    
-                    nodes[child_id] = extend_node(create_node(child_id, child['comment'], 'child', 'ellipse'), child)
+                    nodes[child_id] = (create_node(child_id, child_id, 'child', 'ellipse'))
 
                 # handle xor gate or just add edges
                 if gate == 'xor':
@@ -256,15 +271,15 @@ def get_nodes_and_edges(schema_json):
                     edges.append(create_edge(event_id, xor_id, _edge_type='step_child'))
                 else:
                     edges.append(create_edge(event_id, child_id, _edge_type='child_outlink' if gate == 'and' else 'step_child'))
-            
-                # add outlinks
-                if len(child['outlinks']):
-                    for outlink in child['outlinks']:
-                        if outlink not in nodes:
-                            _label = outlink.split('/')[-1].replace('_', '')
-                            nodes[outlink] = create_node(outlink, _label, 'child', 'ellipse')
-                        edges.append(create_edge(child_id, outlink, _edge_type='child_outlink'))
 
+        # add outlinks
+        if event['outlinks']:
+            for outlink in event['outlinks']:
+                if outlink not in nodes:
+                    _label = outlink.split('/')[-1].replace('_', '')
+                    nodes[outlink] = create_node(outlink, _label, 'child', 'ellipse')
+                edges.append(create_edge(event_id, outlink, _edge_type='child_outlink'))
+ 
     nodes, edges = handle_containers(nodes, edges, containers_to_remove)
 
     # find root node(s)
@@ -286,6 +301,29 @@ def get_nodes_and_edges(schema_json):
         
     return nodes, edges
 
+def fix_participants(schema_json):
+    for event in schema_json['events']:
+        if 'participants' in event:
+            for participant in event['participants']:
+                if 'entity' not in participant:
+                    participant['entity'] = 'Entities/20000/'
+    return schema_json
+
+def fix_entities(schema_json):
+    for event in schema_json['events']:
+        if 'entities' in event:
+            for entity in event['entities']:
+                if 'entity' not in entity:
+                    entity['entity'] = {
+            "@id": "Entities/20000/",
+            "name": "Entity",
+            "wd_node": "wd:Q1234567",
+            "wd_label": "",
+            "wd_description": ""
+        }
+    return schema_json
+
+# TODO: update sideEditor to handle SDF 3.0
 def update_json(values):
     """Updates JSON with values.
 
@@ -345,6 +383,10 @@ def update_json(values):
                 for participant in scheme['participants']:
                     if participant['entity'] == node_id:
                         participant['entity'] = new_value
+                        # if entity is blank, add 'Entities/20000/'
+                        if participant['entity'] == '':
+                            participant['entity'] = 'Entities/20000/'
+                            
         else:
             # scheme data
             if scheme['@id'] == node_id:
@@ -399,7 +441,7 @@ def get_connected_nodes(selected_node):
                 break
     else:
         root_node = nodes[selected_node]
-    
+
     # node children
     for edge in edges:
         if edge['data']['source'] == root_node['data']['id']:

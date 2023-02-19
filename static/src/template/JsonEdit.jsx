@@ -24,39 +24,31 @@ export default class JSONEdit extends Component {
             onEvent: this.handleEvent,
             templates: [
                 {
-                    text: 'Event',
-                    title: 'Insert Event',
+                    text: 'Importance',
+                    title: 'Insert Importance',
                     field: '',
                     value: {
-                        '@id': 'Events/10000/Event',
-                        'name': 'Event Name',
-                        'description': '',
-                        'qnode': 'wd:Q1234567',
-                        'qlabel': 'qnode name',
-                        'participants': [],
-                        'ta1explanation': '',
-                        'privateData': {
-                            '@type': '',
-                            'template': '',
-                            'repeatable': false
-                        }
+                        'probParent': '@id',
+                        'probChild': '@id',
+                        'probability': 0.0
                     }
                 },
                 {
-                    text: 'Container',
-                    title: 'Insert Container',
+                    text: 'Likelihood',
+                    title: 'Insert Likelihood',
                     field: '',
                     value: {
-                        '@id': 'Events/10000/Event:Container',
-                        'name': 'Event outlinks',
-                        'comment': 'container node',
-                        'children_gate': 'or',
-                        'children': [],
-                        'privateData': {
-                            '@type': 'kairos:Container',
-                            'template': '',
-                            'repeatable': false
-                        }
+                        'probParent': '@id',
+                        'probChild': '@id',
+                        'probability': 0.0
+                    }
+                },
+                {
+                    text: 'Modality',
+                    title: 'Insert Modality',
+                    field: '',
+                    value: {
+                        'modality': ['generic', 'hedged', 'irrealis', 'negated']
                     }
                 },
                 {
@@ -64,30 +56,32 @@ export default class JSONEdit extends Component {
                     title: 'Insert Participant',
                     field: '',
                     value: {
-                        '@id': 'Participants/20000/Participant',
+                        '@id': 'Participants/20000/',
                         'roleName': 'consult_XPO',
                         'entity': 'Entities/00001/'
                     }
                 },
                 {
-                    text: 'Children',
-                    title: 'Insert Children',
+                    text: 'Event',
+                    title: 'Insert Event',
                     field: '',
                     value: {
-                        'children_gate': 'or',
-                        'children': [],
-                    }
-                },
-                {
-                    text: 'Child',
-                    title: 'Insert Child',
-                    field: '',
-                    value: {
-                        'child': 'Events/10000/Event',
-                        'comment': 'name',
+                        '@id': 'Events/10000/',
+                        'name': '',
+                        'description': '',
+                        'wd_node': ['wd:Q1234567', 'wdt:P1234567'],
+                        'wd_label': '',
+                        'wd_description': '',
+                        'isSchema': false,
+                        'repeatable': false,
                         'optional': false,
-                        'importance': 1,
-                        'outlinks': []
+                        'outlinks': [],
+                        'participants': [],
+                        'modality': [],
+                        'importance': [],
+                        'likelihood': [],
+                        'entities': [],
+                        'relations': []
                     }
                 },
                 {
@@ -95,10 +89,11 @@ export default class JSONEdit extends Component {
                     title: 'Insert Entity',
                     field: '',
                     value: {
-                        '@id': 'Entities/00000/',
-                        'name': 'name',
-                        'qnode': 'wd:Q1234567',
-                        'qlabel': 'qlabel'
+                        '@id': 'Entities/20000/',
+                        'name': '',
+                        'wd_node': 'wd:Q1234567',
+                        'wd_label': '',
+                        'wd_description': ''                     
                     }
                 },
                 {
@@ -106,11 +101,54 @@ export default class JSONEdit extends Component {
                     title: 'Insert Relation',
                     field: '',
                     value: {
+                        '@id': 'Relations/30000/',
                         'name': '',
-                        'relationSubject': 'Entities/00000/',
-                        'relationPredicate': 'wd:Q1234567',
-                        'relationObject': 'Entities/00000/',
-                        '@id': 'Relations/30000/'
+                        'relationSubject': 'Entities/20000/',
+                        'relationObject': 'Entities/20001/',
+                        'wd_node': 'wdt:P1234567',
+                        'wd_label': '',
+                        'wd_description': ''                   
+                    }
+                },
+                {
+                    text: 'Container',
+                    title: 'Insert Container',
+                    field: '',
+                    value: {
+                        '@id': 'Events/10000/Container:',
+                        'name': 'Event outlinks',
+                        'comment': 'container node',
+                        'isSchema': false,
+                        'optional': false,
+                        'children_gate': 'xor',
+                        'children': [],
+                        'outlinks': []
+                    }
+                },
+                {
+                    text: 'Container Event',
+                    title: 'Insert Container Event',
+                    field: '',
+                    value: {
+                        '@id': 'Events/10000/Container:',
+                        'name': '',
+                        'description': '',
+                        'wd_node': ['wd:Q1234567', 'wdt:P1234567'],
+                        'wd_label': '',
+                        'wd_description': '',
+                        'isSchema': false,
+                        'repeatable': false,
+                        'optional': false,
+                        'children_gate': 'or',
+                        'outlinks': [],
+                        'participants': [],
+                        'children': [],
+                        'modality': [],
+                        'entities': [],
+                        'relations': [],
+                        'importance': [],
+                        'likelihood': []
+                        
                     }
                 }
             ]
@@ -118,6 +156,7 @@ export default class JSONEdit extends Component {
 
         this.jsoneditor = new JSONEditor(this.container, options);
         this.jsoneditor.set(this.props.schemaJson);
+
     }
 
     componentWillUnmount() {
